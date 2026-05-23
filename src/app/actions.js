@@ -1,0 +1,71 @@
+'use server'
+
+import { supabase } from '@/utils/supabase'
+import { revalidatePath } from 'next/cache'
+
+export async function submitInvoice(formData) {
+  try {
+    const receive_id = formData.get('receive_id')
+    const cus_name = formData.get('cus_name')
+    const class_name = formData.get('class')
+    const date_start = formData.get('date_start')
+    const date_end = formData.get('date_end')
+    const amount = formData.get('amount')
+    const bank = formData.get('bank')
+    const payment_date = formData.get('payment_date')
+    const payment_time = formData.get('payment_time')
+    const image = formData.get('image')
+
+    let targetFilePath = null
+
+    if (image && image.size > 0) {
+      const fileExt = image.name.split('.').pop()
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+      
+      const { data, error: uploadError } = await supabase.storage
+        .from('uploads')
+        .upload(fileName, image, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) {
+        console.error('Upload Error:', uploadError)
+        return { success: false, message: 'เกิดข้อผิดพลาดในการอัปโหลดไฟล์สลิป' }
+      }
+      
+      const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(fileName)
+      targetFilePath = publicUrlData.publicUrl
+    } else {
+      return { success: false, message: 'กรุณาอัปโหลดรูปสลิปที่ถูกต้อง' }
+    }
+
+    const { data, error } = await supabase
+      .from('invoice')
+      .insert([
+        {
+          receive_id,
+          cus_name,
+          class: class_name,
+          date_start,
+          date_end,
+          amount,
+          bank,
+          payment_date,
+          payment_time,
+          slip_path: targetFilePath
+        }
+      ])
+
+    if (error) {
+      console.error('Insert Error:', error)
+      return { success: false, message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + error.message }
+    }
+
+    revalidatePath('/dashboard')
+    return { success: true, message: 'บันทึกข้อมูลแล้ว' }
+  } catch (err) {
+    console.error('Unexpected error:', err)
+    return { success: false, message: 'เกิดข้อผิดพลาดไม่ทราบสาเหตุ' }
+  }
+}
