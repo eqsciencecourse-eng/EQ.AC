@@ -301,8 +301,8 @@ export default function Home() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="image">แนบรูปภาพสลิปโอนเงิน</label>
-          <input type="file" className="form-control-file form-control" name="image" id="image" accept="image/*" required />
+          <label htmlFor="image">แนบรูปภาพสลิปโอนเงิน <small className="text-muted">(ไม่บังคับ)</small></label>
+          <input type="file" className="form-control-file form-control" name="image" id="image" accept="image/*" />
         </div>
 
         <div className="form-group mt-4 mb-0">

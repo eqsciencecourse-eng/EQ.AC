@@ -37,8 +37,6 @@ export async function submitInvoice(formData) {
       
       const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(fileName)
       targetFilePath = publicUrlData.publicUrl
-    } else {
-      return { success: false, message: 'กรุณาอัปโหลดรูปสลิปที่ถูกต้อง' }
     }
 
     const { data, error } = await supabase

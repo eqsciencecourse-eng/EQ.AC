@@ -92,7 +92,7 @@ export default async function InvoiceView({ params }) {
           </div>
           <div className="col-10 text-left">
             <h3 className="mb-1" style={{ fontWeight: '700', color: '#1a365d', letterSpacing: '0.5px' }}>โรงเรียนต้นแบบนวัตกรรมและเทคโนโลยี</h3>
-            <small className="text-muted" style={{ fontSize: '0.9rem', fontWeight: '500' }}>เลขผู้เสียภาษี / สถาบันการเรียนรู้เพื่ออนาคต</small>
+            <small className="text-muted" style={{ fontSize: '0.9rem', fontWeight: '500' }}>133/51 จ.ระยอง 21000 เพลินใจ 3 เยื้อง บขส.2 ถ.บายพาส-ทับมา</small>
           </div>
         </div>
 
