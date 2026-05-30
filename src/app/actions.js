@@ -15,6 +15,7 @@ export async function submitInvoice(formData) {
     const payment_date = formData.get('payment_date')
     const payment_time = formData.get('payment_time')
     const image = formData.get('image')
+    const discount_details = formData.get('discount_details')
 
     let targetFilePath = null
 
@@ -53,7 +54,8 @@ export async function submitInvoice(formData) {
           bank,
           payment_date,
           payment_time,
-          slip_path: targetFilePath
+          slip_path: targetFilePath,
+          discount_details: discount_details || null
         }
       ])
 

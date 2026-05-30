@@ -296,6 +296,11 @@ export default function Home() {
         </div>
 
         <div className="form-group">
+          <label htmlFor="discount_details">รายละเอียดส่วนลดหรือโปรโมชั่น (ถ้ามี)</label>
+          <textarea className="form-control" name="discount_details" id="discount_details" rows="2" placeholder="ระบุรายละเอียดส่วนลด หรือโปรโมชั่นต่างๆ เช่น ส่วนลดพี่น้อง 10%, โปรโมชั่นประจำเดือน"></textarea>
+        </div>
+
+        <div className="form-group">
           <label htmlFor="image">แนบรูปภาพสลิปโอนเงิน</label>
           <input type="file" className="form-control-file form-control" name="image" id="image" accept="image/*" required />
         </div>
