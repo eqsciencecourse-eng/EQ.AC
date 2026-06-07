@@ -3,6 +3,29 @@
 import { supabase } from '@/utils/supabase'
 import { revalidatePath } from 'next/cache'
 
+export async function getLatestReceiptNumber() {
+  try {
+    const { data, error } = await supabase
+      .from('invoice')
+      .select('receive_id')
+      .order('receive_id', { ascending: false })
+      .limit(1)
+
+    if (error) {
+      console.error('Fetch latest receipt error:', error)
+      return null
+    }
+
+    if (data && data.length > 0) {
+      return data[0].receive_id
+    }
+    return null
+  } catch (err) {
+    console.error('Unexpected error fetching latest receipt:', err)
+    return null
+  }
+}
+
 export async function submitInvoice(formData) {
   try {
     const receive_id = formData.get('receive_id')
