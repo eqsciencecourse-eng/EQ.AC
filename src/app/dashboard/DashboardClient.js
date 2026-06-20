@@ -1,17 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/utils/supabase'
+import { updateInvoice } from '../actions'
 
 export default function DashboardClient({ initialInvoices }) {
   const router = useRouter()
   const [invoices, setInvoices] = useState(initialInvoices)
+
+  useEffect(() => {
+    setInvoices(initialInvoices)
+  }, [initialInvoices])
   
   // Modals state
   const [selectedImage, setSelectedImage] = useState(null)
   const [editInvoice, setEditInvoice] = useState(null)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   // Filter states
   const [day, setDay] = useState('')
@@ -40,30 +46,33 @@ export default function DashboardClient({ initialInvoices }) {
 
   const handleUpdate = async (e) => {
     e.preventDefault()
+    setIsUpdating(true)
     const formData = new FormData(e.target)
     
-    const updates = {
-      cus_name: formData.get('cus_name'),
-      payment_date: formData.get('payment_date'),
-      amount: formData.get('amount'),
-      class: formData.get('class'),
-      date_start: formData.get('date_start'),
-      date_end: formData.get('date_end'),
-      payment_time: formData.get('payment_time'),
-    }
+    const result = await updateInvoice(formData)
 
-    const { error } = await supabase
-      .from('invoice')
-      .update(updates)
-      .eq('receive_id', editInvoice.receive_id)
+    if (result.success) {
+      alert(result.message)
+      
+      const updatedInvoice = {
+        ...editInvoice,
+        cus_name: formData.get('cus_name'),
+        payment_date: formData.get('payment_date'),
+        amount: formData.get('amount'),
+        class: formData.get('class'),
+        date_start: formData.get('date_start'),
+        date_end: formData.get('date_end'),
+        payment_time: formData.get('payment_time'),
+        discount_details: formData.get('discount_details')
+      };
+      setInvoices(invoices.map(inv => inv.receive_id === editInvoice.receive_id ? updatedInvoice : inv));
 
-    if (!error) {
-      alert('บันทึกการเปลี่ยนแปลงสำเร็จ')
       setEditInvoice(null)
       router.refresh() // re-fetch data
     } else {
-      alert('Error updating: ' + error.message)
+      alert(result.message)
     }
+    setIsUpdating(false)
   }
 
   const handleDelete = async (receive_id) => {
@@ -186,47 +195,81 @@ export default function DashboardClient({ initialInvoices }) {
 
       {/* Edit Modal */}
       {editInvoice && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">แก้ไขข้อมูล</h5>
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
+          <div className="modal-dialog modal-lg animate-fade-in" style={{ transition: 'transform 0.3s ease-out' }}>
+            <div className="modal-content shadow-lg border-0" style={{ borderRadius: '16px' }}>
+              <div className="modal-header bg-light" style={{ borderTopLeftRadius: '16px', borderTopRightRadius: '16px', borderBottom: '2px solid #e2e8f0', padding: '20px 25px' }}>
+                <h5 className="modal-title" style={{ color: '#1a365d', fontWeight: 'bold' }}>
+                  <i className="bi bi-pencil-square me-2" style={{ color: '#2b59c3' }}></i> แก้ไขข้อมูลใบเสร็จ <span className="text-secondary">#{editInvoice.receive_id}</span>
+                </h5>
                 <button type="button" className="close" onClick={() => setEditInvoice(null)}>&times;</button>
               </div>
-              <form onSubmit={handleUpdate}>
-                <div className="modal-body text-left">
-                  <div className="form-group">
-                    <label>ชื่อ-สกุล นักเรียน</label>
-                    <input type="text" className="form-control" name="cus_name" defaultValue={editInvoice.cus_name} />
+              <form onSubmit={handleUpdate} encType="multipart/form-data">
+                <input type="hidden" name="receive_id" value={editInvoice.receive_id} />
+                <div className="modal-body text-left p-4 p-md-5" style={{ backgroundColor: '#f8fafc' }}>
+                  
+                  {/* Section 1: Course Info */}
+                  <div className="bg-white p-4 rounded mb-4 border shadow-sm hover-card-effect animate-fade-in animate-delay-1" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #2b59c3' }}>
+                    <h6 className="mb-4" style={{ color: '#1a365d', fontWeight: 'bold', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                      <i className="bi bi-person-lines-fill me-2" style={{ color: '#2b59c3' }}></i> ข้อมูลนักเรียนและหลักสูตร
+                    </h6>
+                    <div className="form-row">
+                      <div className="form-group col-md-6">
+                        <label className="font-weight-bold text-secondary">ชื่อ-สกุล นักเรียน</label>
+                        <input type="text" className="form-control" name="cus_name" defaultValue={editInvoice.cus_name} />
+                      </div>
+                      <div className="form-group col-md-6">
+                        <label className="font-weight-bold text-secondary">คลาสเรียน</label>
+                        <input type="text" className="form-control" name="class" defaultValue={editInvoice.class} />
+                      </div>
+                    </div>
+                    <div className="form-row">
+                      <div className="form-group col-md-6">
+                        <label className="font-weight-bold text-secondary">วันที่เริ่มเรียน</label>
+                        <input type="date" className="form-control" name="date_start" defaultValue={editInvoice.date_start} />
+                      </div>
+                      <div className="form-group col-md-6">
+                        <label className="font-weight-bold text-secondary">วันสิ้นสุดชำระค่าเรียน</label>
+                        <input type="date" className="form-control" name="date_end" defaultValue={editInvoice.date_end} />
+                      </div>
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>ชำระเงินวันที่</label>
-                    <input type="date" className="form-control" name="payment_date" defaultValue={editInvoice.payment_date} />
+
+                  {/* Section 2: Payment Info */}
+                  <div className="bg-white p-4 rounded mb-2 border shadow-sm hover-card-effect animate-fade-in animate-delay-2" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #38a169' }}>
+                    <h6 className="mb-4" style={{ color: '#1a365d', fontWeight: 'bold', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
+                      <i className="bi bi-wallet2 me-2" style={{ color: '#38a169' }}></i> รายละเอียดการชำระเงิน
+                    </h6>
+                    <div className="form-row">
+                      <div className="form-group col-md-4">
+                        <label className="font-weight-bold text-secondary">จำนวนเงิน (บาท)</label>
+                        <input type="number" className="form-control" name="amount" defaultValue={editInvoice.amount} />
+                      </div>
+                      <div className="form-group col-md-4">
+                        <label className="font-weight-bold text-secondary">ชำระเงินวันที่</label>
+                        <input type="date" className="form-control" name="payment_date" defaultValue={editInvoice.payment_date} />
+                      </div>
+                      <div className="form-group col-md-4">
+                        <label className="font-weight-bold text-secondary">เวลาชำระเงิน</label>
+                        <input type="time" className="form-control" name="payment_time" defaultValue={editInvoice.payment_time} />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="font-weight-bold text-secondary">รายละเอียดส่วนลดหรือโปรโมชั่น</label>
+                      <textarea className="form-control" name="discount_details" rows="2" defaultValue={editInvoice.discount_details}></textarea>
+                    </div>
+                    <div className="form-group mb-0">
+                      <label className="font-weight-bold text-secondary">แนบรูปภาพสลิปโอนเงินใหม่ <small className="text-muted font-weight-normal">(ไม่บังคับ)</small></label>
+                      <input type="file" className="form-control-file form-control" name="image" accept="image/*" />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>จำนวน</label>
-                    <input type="number" className="form-control" name="amount" defaultValue={editInvoice.amount} />
-                  </div>
-                  <div className="form-group">
-                    <label>คลาส</label>
-                    <input type="text" className="form-control" name="class" defaultValue={editInvoice.class} />
-                  </div>
-                  <div className="form-group">
-                    <label>วันที่เริ่มเรียน</label>
-                    <input type="date" className="form-control" name="date_start" defaultValue={editInvoice.date_start} />
-                  </div>
-                  <div className="form-group">
-                    <label>วันสิ้นสุดชำระค่าเรียน</label>
-                    <input type="date" className="form-control" name="date_end" defaultValue={editInvoice.date_end} />
-                  </div>
-                  <div className="form-group">
-                    <label>เวลาชำระเงิน</label>
-                    <input type="time" className="form-control" name="payment_time" defaultValue={editInvoice.payment_time} />
-                  </div>
+
                 </div>
-                <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" onClick={() => setEditInvoice(null)}>ปิด</button>
-                  <button type="submit" className="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+                <div className="modal-footer bg-white" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', borderTop: '1px solid #e2e8f0', padding: '15px 25px' }}>
+                  <button type="button" className="btn btn-light border px-4 font-weight-bold" onClick={() => setEditInvoice(null)} disabled={isUpdating}>ยกเลิก</button>
+                  <button type="submit" className="btn btn-primary px-4 shadow-sm font-weight-bold" disabled={isUpdating}>
+                    {isUpdating ? <span><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>กำลังบันทึก...</span> : <span><i className="bi bi-save me-2"></i>บันทึกการเปลี่ยนแปลง</span>}
+                  </button>
                 </div>
               </form>
             </div>

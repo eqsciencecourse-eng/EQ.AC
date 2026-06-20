@@ -1,6 +1,9 @@
 import { supabase } from '@/utils/supabase'
 import ClientPrint from './ClientPrint'
 
+export const revalidate = 0
+export const dynamic = 'force-dynamic'
+
 // Helper function to convert number to Thai Baht text
 function bahtText(number) {
   if (!number || isNaN(number)) return 'ศูนย์บาทถ้วน';
