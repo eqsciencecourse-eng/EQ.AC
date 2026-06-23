@@ -246,11 +246,11 @@ export default function Home() {
                   </select>
                   <div className="d-flex w-100 mt-2 mt-md-0" style={{ gap: '8px' }}>
                     <input value={programInput} onChange={e => setProgramInput(e.target.value)} className="form-control" placeholder="เพิ่มวิชาใหม่" />
-                    <button className="btn btn-outline-primary text-nowrap" type="button" onClick={handleAddProgram} disabled={isAddingProgram}>
+                    <button className="btn btn-outline-primary btn-sm text-nowrap" type="button" onClick={handleAddProgram} disabled={isAddingProgram}>
                       {isAddingProgram ? 'กำลังเพิ่ม...' : 'เพิ่ม'}
                     </button>
                   </div>
-                  <button className="btn btn-link text-nowrap mt-2 mt-md-0" type="button" onClick={() => setShowProgramsPanel(s => !s)}>
+                  <button className="btn btn-outline-secondary btn-sm text-nowrap mt-2 mt-md-0" type="button" onClick={() => setShowProgramsPanel(s => !s)}>
                     {showProgramsPanel ? 'ปิดรายการ' : 'ดูรายวิชาทั้งหมด'}
                   </button>
                 </div>
@@ -372,7 +372,7 @@ export default function Home() {
                     </select>
                     <div className="d-flex w-100 mt-2 mt-md-0" style={{ gap: '8px' }}>
                       <input value={bankInput} onChange={e => setBankInput(e.target.value)} className="form-control" placeholder="เพิ่มธนาคารใหม่" />
-                      <button className="btn btn-outline-primary text-nowrap" type="button" onClick={handleAddBank} disabled={isAddingBank}>
+                      <button className="btn btn-outline-primary btn-sm text-nowrap" type="button" onClick={handleAddBank} disabled={isAddingBank}>
                         {isAddingBank ? 'กำลังเพิ่ม...' : 'เพิ่ม'}
                       </button>
                     </div>
@@ -390,7 +390,7 @@ export default function Home() {
                   <div className="input-group">
                     <input type="time" className="form-control" name="payment_time" required value={formData.payment_time} onChange={handleChange} />
                     <div className="input-group-append">
-                      <button className="btn btn-outline-secondary" type="button" onClick={setNow}>
+                      <button className="btn btn-outline-secondary btn-sm" type="button" onClick={setNow}>
                         <i className="bi bi-clock-history mr-1"></i> เวลาปัจจุบัน
                       </button>
                     </div>
@@ -411,7 +411,7 @@ export default function Home() {
             </div>
 
             <div className="form-group mt-4 mb-0 animate-fade-in animate-delay-3">
-              <button type="submit" className="btn btn-primary btn-block py-3 shadow-sm rounded" style={{ fontSize: '1.2rem', fontWeight: 'bold', letterSpacing: '0.5px' }} disabled={isSubmitting}>
+              <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <span><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>กำลังบันทึกข้อมูล...</span>
                 ) : (

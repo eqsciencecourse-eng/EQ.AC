@@ -123,7 +123,7 @@ export default function DashboardClient({ initialInvoices }) {
                 </select>
               </div>
               <div className="col-auto">
-                <button type="submit" className="btn btn-primary mb-2">ตกลง</button>
+                <button type="submit" className="btn btn-primary btn-sm mb-2">ตกลง</button>
               </div>
             </div>
           </form>
@@ -157,14 +157,16 @@ export default function DashboardClient({ initialInvoices }) {
                     <td>{new Date(invoice.date_end).toLocaleDateString('en-GB')}</td>
                     <td>{invoice.payment_time ? invoice.payment_time.substring(0, 5) : ''}</td>
                     <td>
-                      <button type="button" className="btn btn-link" onClick={() => setSelectedImage(invoice.slip_path)}>ดูสลิป</button>
+                      <button type="button" className="btn btn-outline-info btn-sm" onClick={() => setSelectedImage(invoice.slip_path)}>ดูสลิป</button>
                     </td>
                     <td>
-                      <button type="button" className="btn btn-info btn-sm mr-1" onClick={() => setEditInvoice(invoice)}>แก้ไข</button>
-                      <button type="button" className="btn btn-danger btn-sm" onClick={() => handleDelete(invoice.receive_id)}>ลบ</button>
+                      <div className="btn-group-actions">
+                        <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setEditInvoice(invoice)}>แก้ไข</button>
+                        <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(invoice.receive_id)}>ลบ</button>
+                      </div>
                     </td>
                     <td>
-                      <Link href={`/invoice/${invoice.receive_id}`} target="_blank" className="btn btn-success btn-sm mb-1"><i className="bi bi-file-earmark-pdf"></i> View PDF</Link>
+                      <Link href={`/invoice/${invoice.receive_id}`} target="_blank" className="btn btn-outline-success btn-sm"><i className="bi bi-file-earmark-pdf"></i> PDF</Link>
                     </td>
                   </tr>
                 )) : (
@@ -178,15 +180,18 @@ export default function DashboardClient({ initialInvoices }) {
 
       {/* Image Modal */}
       {selectedImage && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', position: 'fixed', zIndex: 1050, left: 0, top: 0, width: '100%', height: '100%' }} onClick={() => setSelectedImage(null)}>
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" style={{ maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '16px' }}>
+              <div className="modal-header" style={{ padding: '18px 25px' }}>
                 <h5 className="modal-title">สลิปการโอนเงิน</h5>
-                <button type="button" className="close" onClick={() => setSelectedImage(null)}>&times;</button>
+                <button type="button" className="close" onClick={() => setSelectedImage(null)} style={{ border: 'none', background: 'none', fontSize: '1.5rem', color: '#64748b', cursor: 'pointer' }}>&times;</button>
               </div>
               <div className="modal-body text-center">
-                <img src={selectedImage} className="img-fluid" alt="Slip" />
+                <img src={selectedImage} className="img-fluid" alt="Slip" style={{ maxWidth: '100%', borderRadius: '10px' }} />
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-light" onClick={() => setSelectedImage(null)}>ปิด</button>
               </div>
             </div>
           </div>
@@ -195,21 +200,21 @@ export default function DashboardClient({ initialInvoices }) {
 
       {/* Edit Modal */}
       {editInvoice && (
-        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
-          <div className="modal-dialog modal-lg animate-fade-in" style={{ transition: 'transform 0.3s ease-out' }}>
-            <div className="modal-content shadow-lg border-0" style={{ borderRadius: '16px' }}>
-              <div className="modal-header bg-light" style={{ borderTopLeftRadius: '16px', borderTopRightRadius: '16px', borderBottom: '2px solid #e2e8f0', padding: '20px 25px' }}>
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(4px)', position: 'fixed', zIndex: 1050, left: 0, top: 0, width: '100%', height: '100%', overflowY: 'auto' }} onClick={() => setEditInvoice(null)}>
+          <div className="modal-dialog modal-lg modal-dialog-scrollable animate-fade-in" style={{ transition: 'transform 0.3s ease-out', margin: '30px auto', maxHeight: 'calc(100vh - 60px)' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-content shadow-lg border-0" style={{ borderRadius: '16px', maxHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}>
+              <div className="modal-header bg-light" style={{ borderTopLeftRadius: '16px', borderTopRightRadius: '16px', borderBottom: '2px solid #e2e8f0', padding: '20px 25px', flexShrink: 0 }}>
                 <h5 className="modal-title" style={{ color: '#1a365d', fontWeight: 'bold' }}>
                   <i className="bi bi-pencil-square me-2" style={{ color: '#2b59c3' }}></i> แก้ไขข้อมูลใบเสร็จ <span className="text-secondary">#{editInvoice.receive_id}</span>
                 </h5>
-                <button type="button" className="close" onClick={() => setEditInvoice(null)}>&times;</button>
+                <button type="button" className="close" onClick={() => setEditInvoice(null)} style={{ border: 'none', background: 'none', fontSize: '1.5rem', color: '#64748b', cursor: 'pointer' }}>&times;</button>
               </div>
-              <form onSubmit={handleUpdate} encType="multipart/form-data">
+              <form onSubmit={handleUpdate} encType="multipart/form-data" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
                 <input type="hidden" name="receive_id" value={editInvoice.receive_id} />
-                <div className="modal-body text-left p-4 p-md-5" style={{ backgroundColor: '#f8fafc' }}>
+                <div className="modal-body text-left" style={{ backgroundColor: '#f8fafc', padding: '25px 30px', overflowY: 'auto', flex: '1 1 auto' }}>
                   
                   {/* Section 1: Course Info */}
-                  <div className="bg-white p-4 rounded mb-4 border shadow-sm hover-card-effect animate-fade-in animate-delay-1" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #2b59c3' }}>
+                  <div className="bg-white p-4 rounded mb-4 border shadow-sm" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #2b59c3' }}>
                     <h6 className="mb-4" style={{ color: '#1a365d', fontWeight: 'bold', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
                       <i className="bi bi-person-lines-fill me-2" style={{ color: '#2b59c3' }}></i> ข้อมูลนักเรียนและหลักสูตร
                     </h6>
@@ -236,7 +241,7 @@ export default function DashboardClient({ initialInvoices }) {
                   </div>
 
                   {/* Section 2: Payment Info */}
-                  <div className="bg-white p-4 rounded mb-2 border shadow-sm hover-card-effect animate-fade-in animate-delay-2" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #38a169' }}>
+                  <div className="bg-white p-4 rounded mb-2 border shadow-sm" style={{ borderColor: '#e2e8f0', borderLeft: '4px solid #38a169' }}>
                     <h6 className="mb-4" style={{ color: '#1a365d', fontWeight: 'bold', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>
                       <i className="bi bi-wallet2 me-2" style={{ color: '#38a169' }}></i> รายละเอียดการชำระเงิน
                     </h6>
@@ -265,9 +270,9 @@ export default function DashboardClient({ initialInvoices }) {
                   </div>
 
                 </div>
-                <div className="modal-footer bg-white" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', borderTop: '1px solid #e2e8f0', padding: '15px 25px' }}>
-                  <button type="button" className="btn btn-light border px-4 font-weight-bold" onClick={() => setEditInvoice(null)} disabled={isUpdating}>ยกเลิก</button>
-                  <button type="submit" className="btn btn-primary px-4 shadow-sm font-weight-bold" disabled={isUpdating}>
+                <div className="modal-footer bg-white" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', borderTop: '1px solid #e2e8f0', padding: '15px 25px', flexShrink: 0 }}>
+                  <button type="button" className="btn btn-light" onClick={() => setEditInvoice(null)} disabled={isUpdating}>ยกเลิก</button>
+                  <button type="submit" className="btn btn-primary" disabled={isUpdating}>
                     {isUpdating ? <span><span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>กำลังบันทึก...</span> : <span><i className="bi bi-save me-2"></i>บันทึกการเปลี่ยนแปลง</span>}
                   </button>
                 </div>

@@ -183,7 +183,7 @@ export default function ReportClient({ invoices }) {
                       <a 
                         href={`/invoice/${inv.receive_id}`}
                         className="btn btn-sm btn-outline-primary"
-                        style={{ borderRadius: '6px', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        style={{ borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         title="ดูใบเสร็จ"
                       >
                         <i className="bi bi-file-earmark-text"></i> ใบเสร็จ
@@ -192,7 +192,7 @@ export default function ReportClient({ invoices }) {
                         <button 
                           className="btn btn-sm btn-outline-secondary"
                           onClick={() => setSelectedSlip(inv)}
-                          style={{ borderRadius: '6px', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                          style={{ borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                           title="ดูสลิปหลักฐาน"
                         >
                           <i className="bi bi-image"></i> สลิป
@@ -262,15 +262,13 @@ export default function ReportClient({ invoices }) {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="btn btn-primary"
-                  style={{ borderRadius: '8px', fontWeight: '500', padding: '8px 18px' }}
                   download
                 >
                   <i className="bi bi-download mr-1"></i> ดาวน์โหลดรูปภาพ
                 </a>
                 <button 
                   type="button" 
-                  className="btn btn-secondary" 
-                  style={{ borderRadius: '8px', fontWeight: '500', padding: '8px 18px', backgroundColor: '#e2e8f0', color: '#475569', border: 'none' }}
+                  className="btn btn-light" 
                   onClick={() => setSelectedSlip(null)}
                 >
                   ปิดหน้าต่าง
